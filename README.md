@@ -2,6 +2,11 @@
 
 FinPay is a **Flutter** demo fintech wallet app: home balance, charts, send money, bills, donations, deposits, notifications, and a full transaction ledger with **receipt-style detail**, **PDF**, and **image** export (via the system share sheet).
 
+
+## Demo
+
+![App Demo](assets/demo/ezgif-26840ce362894a41.gif)
+
 ## Requirements
 
 - [Flutter](https://docs.flutter.dev/get-started/install) **3.8+** (see `environment.sdk` in `pubspec.yaml`)
