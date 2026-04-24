@@ -1,0 +1,438 @@
+Build a complete Flutter Fintech mobile app with a dark UI theme. Below is the full specification — implement every screen, component, animation, and routing exactly as described.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN TOKENS & THEME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Colors:
+  background.primary:   #1A1A2E
+  background.card:      #16213E
+  background.surface:   #0F3460
+  accent.blue:          #2563EB
+  accent.blue.light:    #3B82F6
+  accent.red:           #EF4444
+  accent.green:         #22C55E
+  text.primary:         #FFFFFF
+  text.secondary:       #94A3B8
+  text.muted:           #475569
+  border:               #1E293B
+  mastercard.red:       #EB001B
+  mastercard.orange:    #FF5F00
+  chart.fill:           rgba(37,99,235,0.25)
+  chart.stroke:         #2563EB
+
+Typography (use Poppins font via expo-font):
+  display:    Poppins-Bold,   32px
+  h1:         Poppins-SemiBold, 24px
+  h2:         Poppins-SemiBold, 18px
+  h3:         Poppins-Medium,  16px
+  body:       Poppins-Regular, 14px
+  caption:    Poppins-Regular, 12px
+  label:      Poppins-Medium,  13px
+
+Spacing scale: 4, 8, 12, 16, 20, 24, 32, 40
+Border radius: sm=8, md=12, lg=16, xl=24, card=20, pill=999
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NAVIGATION STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use React Navigation v6 with these navigators:
+
+RootStack (Native Stack):
+  └── SplashScreen          (no header)
+  └── OnboardingScreen      (no header)
+  └── AuthStack (Native Stack):
+  │     ├── LoginScreen
+  │     └── RegisterScreen
+  └── MainTabs (Bottom Tab Navigator):
+        ├── HomeScreen
+        ├── CardScreen
+        ├── ActivityScreen
+        └── ProfileScreen
+
+Modal screens pushed from HomeScreen:
+  - SendMoneyScreen
+  - AddCashScreen
+  - NotificationsScreen
+
+Modal screens pushed from CardScreen:
+  - CardTransactionScreen
+
+Modal screens pushed from ProfileScreen:
+  - MyProfileScreen
+  - EStatementScreen
+  - CreditCardScreen
+  - SettingsScreen
+
+All stack transitions: slide from right (default).
+Modal screens: slide from bottom.
+Tab bar: custom animated tab bar (see Tab Bar spec below).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 1 — SPLASH SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Layout: centered on dark background (#1A1A2E).
+
+Content:
+  - Large logo: circular container (80x80, bg #2563EB, radius 24) with a white "F" or wallet SVG icon inside.
+  - App name "FinPay" below in Poppins-Bold 28px white.
+  - Tagline "Your money, simplified" in 14px #94A3B8.
+
+Animations (use react-native-reanimated):
+  1. Logo fades in + scales from 0.6→1.0 (spring, duration 600ms).
+  2. App name slides up from +20px opacity 0→1 (delay 300ms).
+  3. Tagline slides up from +20px opacity 0→1 (delay 500ms).
+  4. After 2.5s total, animate everything out (opacity 1→0, scale 1→1.1, 400ms), then navigate to Onboarding.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 2 — ONBOARDING (3 slides)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use a horizontal FlatList with pagingEnabled.
+
+Slide data:
+  1. Icon: credit card SVG (blue), Title: "Manage Your Cards", Desc: "View and control all your physical and virtual cards in one place."
+  2. Icon: chart/trend SVG (green), Title: "Track Spending", Desc: "Get detailed analytics on your spending patterns and transaction history."
+  3. Icon: send-money SVG (purple), Title: "Send & Receive Instantly", Desc: "Transfer money to anyone, anywhere, with zero friction."
+
+Layout per slide:
+  - Full screen dark background.
+  - Illustration area (top 45%): centered SVG icon, 160x160, with a soft radial glow circle behind it (use Animated opacity pulsing 0.3→0.6).
+  - Title: Poppins-Bold 26px white, centered, margin-top 32.
+  - Description: 15px #94A3B8, centered, horizontal padding 40, margin-top 12.
+
+Bottom area (fixed, not scrolling):
+  - Dot indicators: 3 dots, active=8px wide pill white, inactive=6px circle #475569. Animate width change with spring.
+  - "Next" button (slides 1–2): full-width, bg #2563EB, radius pill, height 54, Poppins-SemiBold 16px.
+  - "Get Started" button (slide 3): same style.
+  - "Skip" text button top-right: 14px #94A3B8.
+
+Transition animation: on slide change, icon scales 0.85→1.0 with spring.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 3 — LOGIN / REGISTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LoginScreen:
+  - Logo + "Welcome Back" header.
+  - Email input (dark surface bg, border #1E293B, radius 12, white text, placeholder #475569).
+  - Password input (same style, with eye toggle icon).
+  - "Forgot Password?" link right-aligned, 13px #2563EB.
+  - "Sign In" primary button (full width, #2563EB, height 54, Poppins-SemiBold 16px, radius 14).
+  - Divider "or continue with" with lines.
+  - Google/Apple social buttons (outline style, #1E293B bg).
+  - "Don't have an account? Sign Up" at bottom.
+
+RegisterScreen: mirror LoginScreen with Name/Email/Password fields + "Sign Up" CTA.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 4 — HOME SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Header:
+  - Left: hamburger/menu icon (3 lines, white). Tap opens a slide-in side drawer (see Sidebar spec).
+  - Center: "Welcome, Tayyab Sohail" in 14px #94A3B8.
+  - Right: notification bell icon (white). Tap navigates to NotificationsScreen.
+
+Balance Card (below header, full width, margin 16):
+  - Background: #16213E, radius 20, padding 20.
+  - Top row: "Total Balance" label (12px #94A3B8) + MasterCard logo SVG (two overlapping circles, red #EB001B + orange #FF5F00) right-aligned.
+  - Balance: "$1,200.00" in Poppins-Bold 32px white, margin-top 8.
+  - Row below balance: scan/QR icon (small, #94A3B8).
+  - Bottom row: two buttons side by side:
+      "+ Add Cash" → outlined, border #2563EB, text #2563EB, bg transparent, height 40, radius 10, flex 1.
+      "↑ Send Money" → solid bg #2563EB, text white, height 40, radius 10, flex 1, margin-left 12.
+
+Quick Actions row (horizontal scroll, margin-top 24):
+  4 items: Bill Pay, Donations, Deposit, More.
+  Each: vertical icon (32x32 bg #16213E, radius 10) + label below 12px #94A3B8. Icons: use SVG paths.
+  Tap with scale animation (0.95 on press, spring back).
+
+Transaction History section:
+  - Header row: "Transaction History" (16px Poppins-SemiBold white) + "See all" (13px #2563EB, right).
+  - Filter tabs below: Weekly | Monthly | Today — pill buttons, active = white bg + dark text, inactive = transparent + #475569 text.
+  - List of transactions (FlatList, keyExtractor by id):
+      Each item: 
+        Left: icon circle (48x48, bg #16213E, radius 14) with category SVG icon.
+        Middle: transaction name (14px Poppins-Medium white) + date (12px #94A3B8).
+        Right: amount, green "+100" or red "−100", 15px Poppins-SemiBold.
+      Divider: 0.5px #1E293B between items.
+      Tap: navigate to transaction detail (simple modal with expanded info).
+
+Transactions data (static, 5 items):
+  - E Wallet    12:10pm 12-12-2024   +100
+  - Online Shopping 12:10pm 12-12-2024  −100
+  - E Wallet    12:10pm 12-12-2024   +100
+  - Banking Fee 12:10pm 12-12-2024   +100
+  - Saving      12:10pm 12-12-2024   −300
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SIDEBAR / DRAWER (global)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Slide in from left (translateX: -width→0), with dark overlay (rgba 0,0,0,0.5) on right.
+Use react-native-reanimated spring animation.
+
+Content:
+  - Top: avatar circle (56x56, bg #2563EB, initials "TS") + name "Tayyab Sohail" + email in 12px #94A3B8.
+  - Menu items (each 52px tall, icon left 24px + label 15px Poppins-Medium white):
+      Home, Cards, Activity, Profile, Settings, Help & Support.
+  - Bottom: Logout button (red text #EF4444, bg transparent, border #EF4444, radius 10, full width).
+  - Close: tap overlay or swipe-left dismisses with reverse spring.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CUSTOM BOTTOM TAB BAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Background: #16213E, height 72, border-top 0.5px #1E293B. Safe area inset bottom.
+4 tabs: Home, Card, Activity, Profile.
+Each tab: SVG icon (24x24) + label (11px). 
+Active tab: icon and label turn #2563EB, with a 4px #2563EB indicator dot above the icon (fades in with spring).
+Icon scale: active=1.15, inactive=1.0, animate with spring on press.
+No ripple effect — use opacity feedback (0.7 on press).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 5 — CARD SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Header: "Your Card" (20px Poppins-SemiBold white) + subtitle "2 Physical Card, 1 Virtual Card" (13px #94A3B8). Right: ••• menu icon.
+
+Toggle: "Physical Card" | "Virtual Card" — pill toggle row, bg #16213E. Active tab has white bg pill inside, animated with spring (translateX).
+
+Payment Card Component (the hero card):
+  - Dimensions: full-width - 32px margins, aspect ratio ~1.6:1, radius 20.
+  - Background gradient: dark blue (#0F3460) to slightly lighter (#16213E).
+  - Top row: NFC/contactless icon (SVG, white, 20px) right-aligned.
+  - Card number: "•••• •••• •••• 3466" in Poppins-Medium 16px white letter-spacing 3.
+  - Row below: 
+      Left stack: "Card Holder" label (10px #94A3B8) + "Tayyab Sohail" (13px white Poppins-Medium).
+      Center: "Valid" label + "12/02/2024".
+      Right: "CVV" label + "663".
+  - Bottom-right: MasterCard overlapping circles SVG logo.
+  - Card has a subtle card-flip animation when toggling Physical↔Virtual (rotateY 0→180→0, duration 500ms, show back face mid-flip).
+
+Below the card — second smaller card peek (partially visible, offset right by 20px, scale 0.92, opacity 0.6). Tap brings it to front with spring.
+
+Card Settings section:
+  List of settings items with toggle or chevron:
+    - Change Pin         [toggle ON, blue]
+    - QR Payment         [toggle ON, blue]
+    - Online Shopping    [toggle OFF, gray]
+    - Card Transactions  [chevron, navigates to CardTransactionScreen]
+    - Tap Pay            [toggle ON, blue]
+  Each item: 56px height, left icon (SVG, 20px, #94A3B8), label (14px Poppins-Medium white), right control.
+  Divider 0.5px #1E293B between items.
+
+Quick actions row below toggle:
+  Freeze Card | Reveal | Freeze Card — icon + label each, tappable with scale press animation.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 6 — CARD TRANSACTION SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Header: "Card Transaction" (20px Poppins-SemiBold white) + ••• icon.
+
+Mini card preview (same design as above card but scale 0.85, non-interactive, margin 16).
+
+"Total Spend  $30" row with "Weekly ▾" dropdown picker (show a modal bottom sheet with options: Weekly, Monthly, Yearly, Today).
+
+Area Chart (IMPORTANT — use victory-native or react-native-gifted-charts):
+  - Height: 220px.
+  - X-axis labels: Jan, Feb, Mar, Apr, May, Jun.
+  - Y-axis: hidden.
+  - Curved area fill: gradient from #2563EB 40% opacity at top to transparent at bottom.
+  - Stroke line: #2563EB, strokeWidth 2.5.
+  - Two data points highlighted with white circle (r=6, stroke #2563EB, strokeWidth 2):
+      Apr → $3,657
+      Jun → $3,657 (higher peak)
+  - Tooltip above each highlighted point: white pill bg, text "$3,657" in 12px Poppins-SemiBold dark.
+  - Chart animates in: line draws from left to right over 800ms on screen mount.
+
+Transaction History (same list style as HomeScreen).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 7 — ACTIVITY SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Header: "My Activity" (20px Poppins-SemiBold white) + ••• icon.
+
+Spending summary card (bg #16213E, radius 20, padding 20):
+  - "Total Spending" label (12px #94A3B8).
+  - "$1,200" in Poppins-Bold 32px white.
+  - Filter tabs row: Weekly | Monthly | Today | Year — pill toggle (same as Home).
+  - Area chart (identical spec to CardTransaction chart above, same animations).
+  - X-axis: Jan–Jun.
+
+"Recent Transfer" section:
+  - Title row: "Recent Transfer" (16px Poppins-SemiBold) + "+" button (circle, 32x32, bg #2563EB, tap navigates to SendMoneyScreen).
+  - Horizontal scroll of avatar circles (48x48 each, bg #16213E, radius 24, initials or profile icon). 4 shown. Tap highlights with blue ring.
+
+Transaction History (same list).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREEN 8 — PROFILE SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Header row: avatar (56x56 circle) + name "Tayyab Sohail" (16px Poppins-SemiBold white) + "Gold Designer" badge (small pill, bg #2563EB30, text #2563EB) + email (12px #94A3B8). QR icon top-right.
+
+Below: MasterCard logo row (same as balance card).
+
+"Profile Settings" section title (13px Poppins-SemiBold #94A3B8, uppercase letter-spacing).
+Items (chevron navigation):
+  - E-Statement        → EStatementScreen
+  - Credit Card        → CreditCardScreen
+  - Settings           → SettingsScreen
+
+"Notification" section:
+  - App Notification   [toggle, ON state]
+
+"More" section:
+  - Language           → picker modal
+  - Country            → picker modal
+
+"Logout" button: outlined, border #EF4444, text #EF4444, radius 10, height 48, full width, margin-top 24. On tap: show confirmation Alert, then navigate to LoginScreen.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SEND MONEY SCREEN (modal, slide from bottom)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Handle bar at top (40px wide, 4px tall, bg #475569, centered).
+Title: "Send Money" centered 18px Poppins-SemiBold white.
+
+Recent contacts: horizontal scroll of avatar circles with name below (12px). 4 contacts.
+
+Amount input: 
+  - Large centered number, Poppins-Bold 48px white.
+  - "$" prefix in #94A3B8 36px.
+  - Underline input style (no box border, just bottom border #1E293B).
+  - Numeric keyboard shown automatically.
+
+Numeric keypad (if no system keyboard): 3x4 grid of number buttons (0-9, backspace, ".") — each 72px circle, bg #16213E, white text 20px.
+
+Note input: "Add a note" placeholder, bg #16213E, radius 12.
+
+"Send Money" primary button — same blue style. On tap: success animation (green checkmark scales in with spring, text "Sent!", auto-dismiss after 1.5s).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SHARED COMPONENTS (build as reusable)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+
+
+
+
+
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All animations use react-native-reanimated v3:
+
+- Screen enter: FadeIn + SlideInRight (100ms delay per screen).
+- Cards: useSharedValue + withSpring for scale on press (0.97).
+- Card flip: rotateY interpolation on Physical↔Virtual toggle.
+- Chart line draw: strokeDashoffset animation over 800ms.
+- Sidebar: translateX withSpring stiffness:200, damping:20.
+- Onboarding dots: width spring from 8→24 for active dot.
+- Tab bar indicator: translateX withSpring on tab change.
+- Balance number: count-up animation from 0→1200 on mount (useEffect, 60fps loop).
+- Toggle switches: use native Switch component styled with trackColor and thumbColor.
+- Splash exit: withTiming opacity 0, duration 400.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATE MANAGEMENT (Zustand)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+useAuthStore:
+  user: { name, email, avatar }
+  isLoggedIn: boolean
+  login(email, password): void
+  logout(): void
+
+useWalletStore:
+  balance: number
+  transactions: Transaction[]
+  cards: Card[]
+  activeCardType: "physical" | "virtual"
+  addTransaction(): void
+  setActiveCardType(): void
+
+useUIStore:
+  sidebarOpen: boolean
+  activeTab: string
+  toggleSidebar(): void
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PACKAGES TO INSTALL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+expo install expo-font @expo-google-fonts/poppins
+npx expo install react-native-reanimated
+npx expo install react-native-gesture-handler
+npx expo install react-native-safe-area-context
+npx expo install react-native-screens
+npm i @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs
+npm i react-native-gifted-charts (or victory-native)
+npm i react-native-svg
+npm i zustand
+npm i react-native-linear-gradient (or expo-linear-gradient)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/app.json
+/App.tsx
+/src
+  /navigation
+    RootNavigator.tsx
+    MainTabNavigator.tsx
+    AuthNavigator.tsx
+  /screens
+    SplashScreen.tsx
+    OnboardingScreen.tsx
+    LoginScreen.tsx
+    RegisterScreen.tsx
+    HomeScreen.tsx
+    ProfileScreen.tsx
+    CardScreen.tsx
+    CardTransactionScreen.tsx
+    ActivityScreen.tsx
+    MyProfileScreen.tsx
+    SendMoneyScreen.tsx
+    AddCashScreen.tsx
+    NotificationsScreen.tsx
+  /components
+    TransactionItem.tsx
+    PaymentCard.tsx
+    AreaChart.tsx
+    PrimaryButton.tsx
+    OutlineButton.tsx
+    SectionHeader.tsx
+    FilterTabs.tsx
+    SettingsItem.tsx
+    Sidebar.tsx
+    TabBar.tsx
+    Avatar.tsx
+  /store
+    useAuthStore.ts
+    useWalletStore.ts
+    useUIStore.ts
+  /theme
+    colors.ts
+    typography.ts
+    spacing.ts
+  /data
+    mockTransactions.ts
+    mockCards.ts
+  /assets
+    /icons (SVG components)
+
+Generate ALL files with complete code. Do not use placeholder comments — write full implementations. Every screen must be fully functional with its navigation, state, and animations working end-to-end.
