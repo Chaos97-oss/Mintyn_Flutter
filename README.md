@@ -5,7 +5,7 @@ FinPay is a **Flutter** demo fintech wallet app: home balance, charts, send mone
 
 ## Demo
 
-![App Demo](assets/demo/ezgif-26840ce362894a41.gif)
+![App Demo](assests/demo/ezgif-26840ce362894a41.gif)
 
 ## Requirements
 
